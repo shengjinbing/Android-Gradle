@@ -27,8 +27,8 @@ dependencies {
     androidTestImplementation 'com.android.support.test.espresso:espresso-core:3.0.2'
 }
 
-task hello{
-    doLast{
+task hello {
+    doLast {
         logger.quiet("dsadasdas")
     }
 }
@@ -44,13 +44,43 @@ task printStringClass << {
 
 }
 
-task printStringVal  <<{
+task printStringVal << {
     def str = 'zhangsan'
 
     //单引号没有运算能力
     println('haha:${str}')
     println("haha:${str}")
+}
 
 /****************集合相关*******************/
+task printList << {
+    def numList = [1, 2, 3, 4, 5, 6]
+    //printIn(numList.getClass().name.toString())
+    print(numList.getClass().name.toString())
+    println(numList[1])//访问第一个元素
+    println(numList[-1])//访问最后一个元素
+    println(numList[-2])//访问倒数第二个元素
+    println(numList[1..3])//访问第二到第四个元素
+
+    numList.each {
+        print it//必须是it这是闭包的知识
+    }
 
 }
+
+task printMap << {
+    def map1 = ['width':1024,'height':768]
+    def name = map1.getClass().name;
+    println(name)
+
+    println(map1['width'])
+    println(map1['height'])
+
+    map1.each {
+        print "key:${it.key},Vaule:${it.value}"
+    }
+
+}
+
+
+
