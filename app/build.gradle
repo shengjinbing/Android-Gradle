@@ -122,4 +122,21 @@ def method1(int a, int b) {
 
 //代码块可以传递，一段被花括号包围的代码，其实就闭包
 
+/****************方JavaBean相关*******************/
+task helloJavaBean << {
+    Person p = new Person()
+    println "名字是：${p.name}"
+    p.name = "张三"
+    println "名字是：${p.name}"
+    println "年龄是：${p.age}"
 
+
+}
+
+class Person{
+    private String name
+    //我们直接用getter和setter方法也可以直接当属性访问，但是没有setter方法不能修改age的值
+    public int getAge(){
+        12
+    }
+}
