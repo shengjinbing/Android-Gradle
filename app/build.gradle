@@ -140,3 +140,90 @@ class Person{
         12
     }
 }
+
+/****************方闭包相关*******************/
+//虽然java有匿名类部类，但是还是一样冗余
+
+
+//初识闭包
+task helloClosure{
+    //使用我们自定义的闭包
+    customEach{
+        print it
+    }
+}
+
+def customEach(closure){
+    for (int i in 1..10){
+        closure(i)
+    }
+}
+
+//像闭包传递参数
+task helloClosureTwo << {
+    eachMap {k,v ->
+        println "${k} is ${v}"
+    }
+}
+def eachMap(closure){
+    def map1 = ["name":"张三","age":"18"]
+    map1.each {
+        closure(it.key,it.value)
+    }
+}
+//闭包委托
+
+task helloDelegate{
+    new Delegate().test{
+        println "thisObject this:${thisObject.getClass()}"
+        println "owner this:${owner.getClass()}"
+        println "delegate this:${delegate.getClass()}"
+
+        method2()
+        it.method2()
+
+    }
+}
+def method2(){
+    println "Context this:${this.getClass()} in root"
+    println "method2 in root"
+}
+
+class Delegate{
+    def method2(){
+        println "Delegate this:${this.getClass()} in Delegate"
+        println "method2 in Delegate"
+    }
+
+    def test(Closure<Delegate>closure){
+        closure(this)
+    }
+}
+
+
+
+task configClosure <<{
+    person1 {
+        personName = "张三"
+        personAge = 12;
+        dump()
+    }
+}
+
+class Person1{
+    String personName
+    int personAge
+
+    def dumpPerson(){
+        printIn "name is ${personName},age is ${personAge}"
+    }
+
+}
+
+def person1(Closure<Person1> closure){
+    Person1 p = new Person1()
+    closure.delegate = p
+    //委托模式优先
+    closure.setResolveStrategy(Closure.DELEGATE_FIRST)
+    closure(p)
+}
