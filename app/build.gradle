@@ -321,3 +321,153 @@ task testtime{
     def time = buildTime();
     println(time);
 }
+//第四章：gradle任务
+
+//4.2多种方式访问任务
+task ex42AccessTask1
+
+ex42AccessTask1.doLast{
+    println "ex42AccessTask1.doLast"
+}
+
+//以访问集合元素的方式访问我们创建的任务
+task ex42AccessTask2
+tasks['ex42AccessTask2'].doLast{
+    println "ex42AccessTask12.doLast"
+}
+
+//任务分组和描述
+def Task myTask = task ex43GroupTask
+myTask.group = BasePlugin.BUILD_GROUP;
+myTask.description = '这是一个构建的引导任务'
+myTask.doLast {
+    println "group:${group},description:${description}"
+}
+
+//任务的执行分析
+def Task myTask1 = task ex45CustomTask(type:CustomTask )
+myTask1.doFirst {
+    println 'doFirst'
+}
+myTask1.doLast {
+    println 'doLast'
+
+}
+class CustomTask extends DefaultTask{
+    @TaskAction
+    def doself(){
+        println 'doself'
+
+    }
+}
+//任务的排序 shouldRunAfter ,mustRunAfter
+task ex46OrderTask1 << {
+    println 'ex46OrderTask1'
+}
+task ex46OrderTask2 << {
+    println 'ex46OrderTask2'
+}
+ex46OrderTask1.mustRunAfter ex46OrderTask2
+
+//任务的启用和禁用
+
+task ex47DisenabledTask <<{
+    println 'ex47DisenabledTaskssssssss'
+}
+ex47DisenabledTask.enabled = false
+
+//任务的onlyIf断言
+//gradlew -Pbuild_apps=all buildDabao 命令-P的意思是Project指定K-V格式的属性
+//键值对，使用格式为-PK=V
+
+final String BUILD_APPS_ALL="all";
+final String BUILD_APPS_SHOUFA="shoufa";
+final String BUILD_APPS_EXCLUDE_SHOUFA="exclude_shoufa";
+
+task ex48QQRelease << {
+    println '打应用宝的包'
+}
+task ex48BaiduRelease << {
+    println '打百度的包'
+}
+task ex48HuaweiRelease << {
+    println '打华为的包'
+}
+task ex48MimuRelease << {
+    println '打MIMU的包'
+}
+
+task buildDabao{
+    group BasePlugin.BUILD_GROUP
+    description "打渠道包"
+}
+
+buildDabao.dependsOn ex48QQRelease,ex48BaiduRelease,ex48HuaweiRelease,ex48MimuRelease
+
+//是true就执行
+ex48QQRelease.onlyIf{
+    def execute = false;
+    if(project.hasProperty("build_apps")){
+        println 'ex48QQRelease'
+        Object buildApps = project.property("build_apps")
+        if(BUILD_APPS_SHOUFA.equals(buildApps) ||
+           BUILD_APPS_ALL.equals(buildApps)){
+               execute = true
+           }else{
+               execute = false;
+        }
+    }else {
+        println 'ex48QQRelease8888'
+
+        execute = true
+    }
+    execute
+}
+//是true就执行
+ex48BaiduRelease.onlyIf{
+    def execute = false;
+    if(project.hasProperty("build_apps")){
+        Object buildApps = project.property("build_apps")
+        if(BUILD_APPS_EXCLUDE_SHOUFA.equals(buildApps) ||
+                BUILD_APPS_ALL.equals(buildApps)){
+            execute = true
+        }else{
+            execute = false;
+        }
+    }else {
+        execute = true
+    }
+    execute
+}
+//是true就执行
+ex48HuaweiRelease.onlyIf{
+    def execute = false;
+    if(project.hasProperty("build_apps")){
+        Object buildApps = project.property("build_apps")
+        if(BUILD_APPS_SHOUFA.equals(buildApps) ||
+                BUILD_APPS_ALL.equals(buildApps)){
+            execute = true
+        }else{
+            execute = false;
+        }
+    }else {
+        execute = true
+    }
+    execute
+}
+//是true就执行
+ex48MimuRelease.onlyIf{
+    def execute = false;
+    if(project.hasProperty("build_apps")){
+        Object buildApps = project.property("build_apps")
+        if(BUILD_APPS_SHOUFA.equals(buildApps) ||
+                BUILD_APPS_ALL.equals(buildApps)){
+            execute = true
+        }else{
+            execute = false;
+        }
+    }else {
+        execute = true
+    }
+    execute
+}
